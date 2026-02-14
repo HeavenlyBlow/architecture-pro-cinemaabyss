@@ -2,9 +2,9 @@ name: API Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, cinema ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, cinema ]
   workflow_dispatch:
     inputs:
       environment:
@@ -52,20 +52,10 @@ jobs:
         run: npm install
       
       - name: Run API tests
-        working-directory: tests/postman
         run: |
+          docker build -t cinemaabyss-api-tests ./tests/postman
+          docker run --network=cinemaabyss-network -v "$(pwd)/tests/postman/reports:/app/reports" cinemaabyss-api-tests
 
-          docker compose up -d
-          # Wait for services to be ready
-          echo "Waiting for services to be ready..."
-          sleep 15
-          # Build the Docker image
-          docker build -t cinemaabyss-api-tests .
-          
-          # Run the tests in Docker
-          docker run --network=cinemaabyss-network -v "$(pwd)/reports:/app/reports" cinemaabyss-api-tests
-        
-      
       - name: Stop services
         if: always()
         run: docker compose down

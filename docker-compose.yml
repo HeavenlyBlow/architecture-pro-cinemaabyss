@@ -57,6 +57,9 @@ services:
       dockerfile: Dockerfile
     container_name: cinemaabyss-monolith
     depends_on:
+      postgres:
+        condition: service_healthy
+    links:
       - postgres
     ports:
       - "8080:8080"
@@ -73,6 +76,9 @@ services:
       dockerfile: Dockerfile
     container_name: cinemaabyss-movies-service
     depends_on:
+      postgres:
+        condition: service_healthy
+    links:
       - postgres
     ports:
       - "8081:8081"
